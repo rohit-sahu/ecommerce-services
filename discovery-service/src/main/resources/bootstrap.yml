@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: discovery-service
+  profiles:
+    active: default,replicas1
+  cloud:
+    config:
+      uri: http://localhost:8888
+      #      uri: http://git-config-server/
+      name: ${spring.application.name}
+      profile: ${spring.profiles.active}
+      label: master
+      #      discovery:
+      #        enabled: true
+      fail-fast: true
+      allowOverride: true
+      overrideSystemProperties: false
+      overrideNone: true
+eureka:
+  instance:
+    metadataMap:
+      configPath: configurations/${spring.application.name}
+management:
+  security:
+    enable: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'

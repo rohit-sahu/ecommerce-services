@@ -1,0 +1,99 @@
+spring:
+  application:
+    name: order-service
+  profiles:
+   active: default,dev
+server:
+  port: 8086
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8671/eureka/
+  instance:
+    hostname: localhost
+    appname: ${spring.application.name}
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
+---
+spring:
+  application:
+    name: order-service
+#  profiles: dev
+  config:
+    activate:
+      on-profile:
+        - dev
+server:
+  port: 8087
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/,http://replicas2:8762/eureka/,http://replicas3:8763/eureka/
+  instance:
+    hostname: localhost
+    appname: ${spring.application.name}
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
+
+---
+spring:
+  application:
+    name: order-service
+#  profiles: uat
+  config:
+    activate:
+      on-profile:
+      - uat
+server:
+  port: 8088
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/,http://replicas2:8762/eureka/,http://replicas3:8763/eureka/
+  instance:
+    hostname: localhost
+    appname: ${spring.application.name}
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'

@@ -1,0 +1,152 @@
+# This default profile is used when running a single instance completely standalone:
+---
+spring:
+  application:
+    name: discovery-service
+  profiles:
+    active: default,replicas1
+server:
+  port: 8671
+eureka:
+  datacenter: default
+  environment: default
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
+# replicas1, replicas2, and replicas3 illustrate running 3 intercommunicating instances.
+# This example has them running side-by-side on localhost
+# -- which is unrealistic in production
+# -- but does illustrate how multiple instances collaborate.
+#
+# Run by opening 3 separate command prompts:
+# java -jar -Dspring.profiles.active=replicas1 eureka-service-0.0.1-SNAPSHOT.jar
+# java -jar -Dspring.profiles.active=replicas2 eureka-service-0.0.1-SNAPSHOT.jar
+# java -jar -Dspring.profiles.active=replicas3 eureka-service-0.0.1-SNAPSHOT.jar
+
+# For Spring-Boot 2.x
+# mvn spring-boot:run -Dspring-boot.run.profiles=replicas1
+# mvn spring-boot:run -Dspring-boot.run.profiles=replicas2
+# mvn spring-boot:run -Dspring-boot.run.profiles=replicas3
+
+# For Spring-Boot 1.x
+# mvn spring-boot:run -Dspring.profiles.active=replicas1
+# mvn spring-boot:run -Dspring.profiles.active=replicas2
+# mvn spring-boot:run -Dspring.profiles.active=replicas3
+---
+spring:
+  application:
+    name: discovery-service
+  profiles: replicas1
+server:
+  port: 8761
+eureka:
+  datacenter: replicas1
+  environment: replicas1
+  instance:
+    hostname: replicas1
+    appname: eureka-cluster
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://replicas2:8762/eureka/,http://replicas3:8763/eureka/
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
+---
+spring:
+  application:
+    name: discovery-service
+  profiles: replicas2
+server:
+  port: 8762
+eureka:
+  datacenter: replicas2
+  environment: replicas2
+  instance:
+    hostname: replicas2
+    appname: eureka-cluster
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://replicas1:8761/eureka/,http://replicas3:8763/eureka/
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
+---
+spring:
+  application:
+    name: discovery-service
+  profiles: replicas3
+server:
+  port: 8763
+eureka:
+  datacenter: replicas3
+  environment: replicas3
+  instance:
+    hostname: replicas3
+    appname: eureka-cluster
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://replicas1:8761/eureka/,http://replicas2:8762/eureka/
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /
+      # By default, only 'health' and 'info' are accessible via web
+      exposure:
+        include: '*'
